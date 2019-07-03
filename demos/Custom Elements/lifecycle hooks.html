@@ -1,0 +1,113 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+/* menu-button[disabled] {
+	display: block;
+	background-color: #aaa;
+} */
+</style>
+</head>
+<body>
+<div id="demo-1" class="container">
+	<menu-button disabled></menu-button>
+</div>
+<div id="demo-2" class="container"></div>
+
+<script>
+
+// 生命周期顺序：
+// constructor -> [attributeChangedCallback] -> connectedCallback -> disconnectCallback
+class MenuButton extends HTMLElement {
+	static get observedAttributes() {
+		return ['class', 'disabled']
+	}
+
+	constructor() {
+		console.log('-----------------------------', 'constructor')
+		super();
+		this.value = 233
+		const shadowRoot = this.attachShadow({mode: 'open'})
+		shadowRoot.innerHTML = `
+		  <style>
+			:host {
+				display: block;
+				color: red;
+			}
+			:host([disabled]) {
+				background-color: #aaa;
+			}
+			.inner-btn {
+				color: blue;
+			}
+		  </style>
+		  <div class="inner-btn">自定义元素</div>
+		`
+		this.initEvents()
+	}
+
+	initEvents() {
+		this.addEventListener('click', this.toggleDisable)
+		// this.addEventListener('click', () => {
+		// 	this.toggleDisable()
+		// })
+	}
+
+	toggleDisable() {
+		console.log(this)
+		this.disabled = !this.disabled
+	}
+
+	// 当 custom element被插入文档DOM时，被调用
+	connectedCallback() {
+		console.log('-----------------------------', '元素被插入文档')
+	}
+	// 当 custom element从文档DOM中删除时，被调用
+	disconnectedCallback() {
+		console.log('-----------------------------', '元素被移出文档')
+	}
+	// 当 custom element被移动到新的文档时，被调用
+	adoptedCallback() {
+		console.log('-----------------------------', '元素被移动到其他文档')
+	}
+	// 当 custom element增加、删除、修改自身属性时，被调用
+	// 这个方法只有当被保存在 observedAttributes 数组的属性改变时，就如这个例子中的disabled，被改变才会调用，其他属性改变则不会
+	attributeChangedCallback(attrName, oldValue, newValue) {
+		console.log('-----------------------------', '元素属性改变了')
+		console.log(attrName, oldValue, newValue)
+	}
+
+	set disabled(newVal) {
+		// console.log('set disabled:', newVal)
+		if (newVal) {
+			this.setAttribute('disabled', 'true')
+		} else {
+			this.removeAttribute('disabled')
+		}
+	}
+
+	get disabled() {
+		// console.log('get disabled:')
+		return this.hasAttribute('disabled')
+	}
+}
+// 为了与内置元素区分，自定义元素名称必须要有中划线，不能定义如 menubutton 这种没有中划线的名称
+customElements.define('menu-button', MenuButton);
+
+{
+	// 使用
+	const btn = document.querySelector('menu-button')
+	console.log(btn)
+	console.log(btn.value)
+	setTimeout(() => {
+		const demo2 = document.querySelector('#demo-2')
+		demo2.appendChild(btn)
+	}, 1000)
+	setTimeout(() => {
+		btn.disabled = false
+		// console.log(btn.disabled)
+	}, 2000)
+}
+
+</script>
+</html>

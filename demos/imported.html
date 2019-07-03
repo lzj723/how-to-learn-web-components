@@ -1,0 +1,38 @@
+
+<template>
+<style>
+:host {
+	color: #fff;
+}
+.inner-dom {
+	background-color: #0099CC;
+}
+</style>
+<div class="inner-dom">
+	<h1>hello world!</h1>
+</div>
+<script>
+	console.log('这行文字，只在template被加进dom tree后才会打印')
+</script>
+</template>
+
+<script>
+{
+	// importDoc 引用指向 本文件的 文档对象
+	const importDoc = document.currentScript.ownerDocument;
+	const templateContent = importDoc.querySelector('template').content
+	const clonedNode = importDoc.importNode(templateContent, true)
+
+	// 定义
+	class MenuButton extends HTMLElement {
+		constructor() {
+			super()
+			this.value = 233
+			const shadowRoot = this.attachShadow({mode: 'open'})
+			shadowRoot.appendChild(clonedNode)
+		}
+	}
+	// 为了与内置元素区分，自定义元素名称必须要有中划线，不能定义如 menubutton 这种没有中划线的名称
+	customElements.define('menu-button', MenuButton)
+}
+</script>

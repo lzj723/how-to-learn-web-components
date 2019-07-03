@@ -1,0 +1,49 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+#demo-1 {
+	color: yellow;
+}
+.inner-dom {
+	background-color: green !important;
+}
+</style>
+</head>
+<body>
+
+<div id="demo-1" class="container"></div>
+
+<template id="my-tpl">
+<style>
+:host {
+	color: #fff;
+}
+.inner-dom {
+	background-color: #0099CC;
+}
+</style>
+<div class="inner-dom">
+	<h1>hello world!</h1>
+</div>
+<script>
+	console.log('这行文字，只在template被加进dom tree后才会打印')
+</script>
+</template>
+
+<script>
+
+// 通过模板选择器获取到模板，再取其内容;
+const templateContent = document.querySelector('#my-tpl').content
+// 两种克隆模板内容的方法
+const clonedNode = document.importNode(templateContent, true)
+// const clonedNode = templateContent.cloneNode(true)
+// 将克隆结果插入到dom结构中;
+setTimeout(() => {
+	// 创建一个shadowDOM
+	const shadowDom = document.querySelector('#demo-1').attachShadow({ mode: 'open' })
+	shadowDom.appendChild(clonedNode)
+}, 1000)
+
+</script>
+</html>

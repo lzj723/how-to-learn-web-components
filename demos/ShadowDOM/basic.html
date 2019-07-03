@@ -1,0 +1,87 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+</style>
+</head>
+<body>
+
+<div id="demo-1" class="container">
+	<span>Shadow DOM 01</span>
+</div>
+<div id="demo-2" class="container">
+	<span>Shadow DOM 02</span>
+	<span id="test-dom">Shadow DOM 02</span>
+</div>
+
+<script>
+/*
+Shadow DOM相关概念：
+Shadow host：一个常规 DOM节点，Shadow DOM会被添加到这个节点上。
+Shadow tree：Shadow DOM内部的DOM树。
+Shadow root: Shadow tree的根节点。
+Shadow boundary：Shadow DOM结束的地方，也是常规 DOM开始的地方。
+
+1. shadowDOM，形成一个封闭的空间，将内部的html、css、js与外部隔离，不受干扰。
+其中，DOM结构中的元素是代言人，可以被爬虫爬取，而shadowDOM则是真正的DOM，用于展示内容,不会被爬取。
+多与template组合使用，使template内的css、js不受外界干扰。
+
+2. shadowDOM内的模板可以通过:host{}来修改其外部容器的css样式。
+优先级依照元素选择器的优先级进行比较，来决定是否能够修改template内部的样式。
+
+3. 使用attachShadow()方法创建的元素就是一个影子DOM，而其子内容就构成一棵影子树（shadow tree），和影子DOM绑定，也就是包含该树的文档内元素通常称为影子主体（shadow host）
+
+
+const shadow = elementRef.attachShadow({mode: 'open'});
+将 mode设置为 open 表示你可以通过页面内的 JavaScript 方法来获取 Shadow DOM，例如使用Element.shadowRoot
+将 mode设置为 closed，那么就不可以在外部获取 Shadow DOM了——myCustomElem.shadowRoot 将会返回 null，比如video元素
+*/
+
+
+// 创建一个shadowDOM
+const shadowDom1 = document.querySelector('#demo-1').attachShadow({ mode: 'open' })
+const shadowDom2 = document.querySelector('#demo-2').attachShadow({ mode: 'closed' })
+
+// 访问宿主元素
+console.log('shadowDom1 host:', shadowDom1.host)
+console.log('shadowDom2 host:', shadowDom2.host)
+
+// 宿主元素访问shadowRoot
+const shadowRoot1 = document.querySelector('#demo-1').shadowRoot
+console.log(`mode is ${shadowDom1.mode}:`, shadowRoot1)
+const shadowRoot2 = document.querySelector('#demo-2').shadowRoot
+console.log(`mode is ${shadowDom2.mode}:`, shadowRoot2)
+// console.log(shadowDom1 === shadowRoot1)
+
+
+// 像使用普通HTML元素一样使用 Shadom DOM
+// const mydiv = document.createElement('div')
+// mydiv.textContent = 'Shadow DOM test'
+// shadowDom1.appendChild(mydiv.cloneNode(true))
+// shadowDom2.appendChild(mydiv.cloneNode(true))
+
+
+const htmls = `
+	<h2>标题</h2>
+	<div>
+		<span>内容</span>
+	</div>
+`
+shadowDom1.innerHTML = htmls
+shadowDom2.innerHTML = htmls
+
+console.log(document.querySelector('#test-dom'))
+
+
+// 支持检测
+function supportsShadowDOM() {
+  return 'attachShadow' in document.body
+}
+
+if (supportsShadowDOM()) {
+  console.log('您的浏览器支持ShadowDOM')
+} else {
+  console.error('您的浏览器不支持ShadowDOM')
+}
+</script>
+</html>

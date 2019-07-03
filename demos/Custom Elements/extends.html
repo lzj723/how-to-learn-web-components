@@ -1,0 +1,79 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+#inner-wrapper {
+	border: 1px dashed red;
+}
+</style>
+</head>
+<body>
+<div id="demo-1" class="container">
+	<!-- 有效 -->
+	<p id="my-menu-btn" is="menu-button"></p>
+	<!-- 无效 -->
+	<div is="menu-button"></div>
+	<!-- 无效 -->
+	<menu-button></menu-button>
+	<div id="inner-wrapper"></div>
+</div>
+
+<script>
+/*
+1、使用 extends 继承了其他元素之后，必须使用继承元素标签名加上is属性才有效，使用自定义标签无效
+2、is 属性只有在元素被创建时声明有效，元素创建后再设置is属性无效
+*/
+class MenuButton extends HTMLParagraphElement {
+	constructor() {
+		super()
+		this.value = 233
+		const shadowRoot = this.attachShadow({mode: 'open'})
+		shadowRoot.innerHTML = `
+		  <style>
+			:host {
+				color: red;
+			}
+			.inner-btn {
+				color: blue;
+			}
+		  </style>
+		  <div class="inner-btn">自定义内置元素</div>
+		`
+	}
+}
+customElements.define('menu-button', MenuButton, { extends: 'p' })
+
+
+// 有效
+{
+	const btn = document.querySelector('#my-menu-btn')
+	console.log(btn)
+	if (btn) {
+		console.log(btn.value)
+	}
+}
+// 无效
+{
+	const btn = document.querySelector('menu-button')
+	console.log(btn)
+	if (btn) {
+		console.log(btn.value)
+	}
+}
+
+
+{
+	const container = document.querySelector('#inner-wrapper')
+	// 有效
+	const menuBtn = document.createElement('p', { is: 'menu-button' })
+	container.appendChild(menuBtn)
+	// 无效
+	const menuBtn2 = document.createElement('menu-button')
+	container.appendChild(menuBtn2)
+	// 无效
+	const menuBtn3 = document.createElement('p')
+	menuBtn3.setAttribute('is', 'menu-button')
+	container.appendChild(menuBtn3)
+}
+</script>
+</html>

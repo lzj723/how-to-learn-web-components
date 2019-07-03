@@ -1,0 +1,145 @@
+
+<template>
+  <style>
+    .wrapper {
+      all: initial;
+      opacity: 0;
+      display: none;
+      /* visibility: hidden; */
+      transition: opacity 0.25s ease-in;
+    }
+    .wrapper.open {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 1;
+      /* visibility: visible; */
+    }
+
+    .wrapper.open .dialog {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+
+    .dialog__mask {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.75);
+    }
+    .dialog {
+      position: fixed;
+      max-width: 600px;
+      padding: 1rem;
+      background: #fff;
+      min-width: 400px;
+      opacity: 0;
+      transform: translateY(-100px);
+      transition: all 0.25s ease-in;
+    }
+    .dialog__title {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .close-btn {
+      all: unset;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+    .close-btn:focus {
+      border: 2px solid blue;
+    }
+  </style>
+
+  <div class="wrapper">
+    <div class="dialog__mask"></div>
+    <div class="dialog">
+      <span class="close-btn">×</span>
+      <div class="dialog__title">Hello World</div>
+      <div class="dialog__body">
+        <p>这是一个自定义弹窗标签元素</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+'use strict';
+
+const importDoc = document.currentScript.ownerDocument;
+const templateContent = importDoc.querySelector('template').content
+let clonedNode = importDoc.importNode(templateContent, true)
+
+class MyDialog extends HTMLElement {
+  static get observedAttributes() {
+    return ['open'];
+  }
+  
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.close = this.close.bind(this);
+    this.shadowRoot.appendChild(clonedNode);
+    clonedNode = null
+  }
+
+  attributeChangedCallback(attrName, oldValue, newValue) {
+    if (oldValue !== newValue) {
+      this[attrName] = this.hasAttribute(attrName);
+    }
+  }
+
+  connectedCallback() {
+    this.shadowRoot.querySelector('.close-btn').addEventListener('click', this.close);
+    this.shadowRoot.querySelector('.dialog__mask').addEventListener('click', this.close);
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.querySelector('.close-btn').removeEventListener('click', this.close);
+    this.shadowRoot.querySelector('.dialog__mask').removeEventListener('click', this.close);
+  }
+
+  get open() {
+    return this.hasAttribute('open');
+  }
+
+  set open(isOpen) {
+    const wrapper = this.shadowRoot.querySelector('.wrapper')
+    if (isOpen) {
+      wrapper.style.display = 'flex';
+      setTimeout(() => {
+        wrapper.classList.toggle('open', isOpen);
+        this.setAttribute('open', '');
+      });
+    } else {
+      wrapper.style.display = 'none';
+      setTimeout(() => {
+        wrapper.classList.toggle('open', isOpen);
+        this.removeAttribute('open');
+        this.close();
+      });
+    }
+  }
+
+  close() {
+    if (this.open === false) return
+    this.open = false;
+    const closeEvent = new CustomEvent('dialog-closed');
+    this.dispatchEvent(closeEvent);
+  }
+}
+
+customElements.define('my-dialog', MyDialog);
+
+</script>

@@ -1,0 +1,71 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+.my-slot {
+	color: red;
+}
+</style>
+</head>
+<body>
+<div id="demo-1" class="container">
+	<menu-button>
+		<div slot="header" class="my-slot">header slot</div>
+		<div class="my-slot">未命名 slot</div>
+	</menu-button>
+</div>
+<div id="demo-2" class="container"></div>
+
+<script>
+// 定义
+class MenuButton extends HTMLElement {
+	constructor() {
+		super()
+		this.value = 233
+		const shadowRoot = this.attachShadow({mode: 'open'})
+		shadowRoot.innerHTML = `
+		  <style>
+			:host {
+				color: red;
+			}
+			.inner-btn {
+				color: blue;
+			}
+			/* 内部样式，不会影响外部 */
+			.my-slot {
+				color: yellow !important;
+			}
+		  </style>
+		  <div class="inner-btn">
+		  	自定义元素slots：
+			<slot name="header"></slot>
+			<slot name="body">没有定义body slot时，这行文字会出现</slot>
+			<slot></slot>
+		  </div>
+		`
+	}
+}
+// 为了与内置元素区分，自定义元素名称必须要有中划线，不能定义如 menubutton 这种没有中划线的名称
+customElements.define('menu-button', MenuButton)
+
+// slot 内容可以被文档查找
+const slotElms = document.querySelectorAll('.my-slot')
+console.log(slotElms)
+
+{
+	// 使用
+	const btn = document.querySelector('menu-button')
+	console.log(btn)
+	// remove slot
+	setTimeout(() => {
+		const demo2 = document.querySelector('#demo-2')
+		demo2.appendChild(slotElms[0])
+	}, 5000)
+	// add slot
+	setTimeout(() => {
+		btn.appendChild(slotElms[0])
+	}, 10000)
+}
+
+</script>
+</html>

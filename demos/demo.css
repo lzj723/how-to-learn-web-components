@@ -1,0 +1,14 @@
+
+.code,
+.container {
+	width: 100%;
+    background-color: #F7F7F7;
+    border: 1px solid #CCC;
+    position: relative;
+    box-sizing: border-box;
+    min-height: 30px;
+    margin: 20px 0px;
+    padding: 20px;
+    box-shadow: 3px 3px 10px #ccc;
+    text-align: center;
+}

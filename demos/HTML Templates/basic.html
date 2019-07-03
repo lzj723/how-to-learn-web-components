@@ -1,0 +1,66 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+</style>
+</head>
+<body>
+
+<div id="demo-1" class="container"></div>
+
+<template id="my-tpl">
+<style>
+:host {
+	color: #fff;
+}
+.inner-dom {
+	background-color: #0099CC;
+}
+</style>
+<div class="inner-dom">
+	<h1>hello world!</h1>
+</div>
+<script>
+	console.log('这行文字，只在template被加进dom tree后才会打印')
+</script>
+</template>
+
+<script>
+/*
+特性：
+1. template里可以存放html、css、js;
+2. template内部的html、css、js不会被浏览器加载、渲染，也不会被执行;
+3. template内的dom不在主文档内，不能被 document.querySelector 查找
+   template.content 为只读属性
+4. 移除模板 document.querySelector('template').remove();
+
+引入的时候先获取到模板，再复制模板的content，将其插入dom结构中;
+模板的作用在于可重用，每次的使用都需要复制模板的content，插入DOM中;
+Template模板所定义的css、js可被外界干扰，封装性不好，通常多与ShadowDOM组合；
+*/
+
+// 通过模板选择器获取到模板，再取其内容;
+const templateContent = document.querySelector('#my-tpl').content
+// 两种克隆模板内容的方法
+const clonedNode = document.importNode(templateContent, true)
+// const clonedNode = templateContent.cloneNode(true)
+// 将克隆结果插入到dom结构中;
+setTimeout(() => {
+	document.querySelector('#demo-1').appendChild(clonedNode)
+}, 1000)
+
+console.log(document.querySelector('.inner-dom'))
+
+
+// 支持检测
+function supportsTemplate() {
+	return 'content' in document.createElement('template')
+}
+
+if (supportsTemplate()) {
+  console.log('您的浏览器支持HTML Templates')
+} else {
+  console.error('您的浏览器不支持HTML Templates')
+}
+</script>
+</html>

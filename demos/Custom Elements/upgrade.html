@@ -1,0 +1,48 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+</style>
+</head>
+<body>
+<div id="demo-1" class="container">
+	<menu-button></menu-button>
+</div>
+
+<script>
+// 定义
+class MenuButton extends HTMLElement {
+	constructor() {
+		super()
+		this.value = 233
+		const shadowRoot = this.attachShadow({mode: 'open'})
+		shadowRoot.innerHTML = `
+		  <style>
+			:host {
+				color: red;
+			}
+			.inner-btn {
+				color: blue;
+			}
+		  </style>
+		  <div class="inner-btn">自定义元素</div>
+		`
+	}
+}
+
+// customElements.upgrade 的用法，主要用于通过 document.createElement 创建的未升级的dom
+// 可以升级一个dom树，包括其子孙节点，如果没有需要升级的节点也不会报任何错误
+{
+	const menuBtn = document.createElement("menu-button")
+
+	customElements.define('menu-button', MenuButton)
+
+	console.log(menuBtn instanceof MenuButton) // 升级前
+
+	customElements.upgrade(menuBtn)
+
+	console.log(menuBtn instanceof MenuButton)    // 升级后
+}
+
+</script>
+</html>

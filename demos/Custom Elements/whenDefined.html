@@ -1,0 +1,58 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+</style>
+</head>
+<body>
+<div id="demo-1" class="container">
+	<menu-button></menu-button>
+</div>
+
+<script>
+// 定义
+class MenuButton extends HTMLElement {
+	constructor() {
+		super()
+		this.value = 233
+		const shadowRoot = this.attachShadow({mode: 'open'})
+		shadowRoot.innerHTML = `
+		  <style>
+			:host {
+				color: red;
+			}
+			.inner-btn {
+				color: blue;
+			}
+		  </style>
+		  <div class="inner-btn">自定义元素</div>
+		`
+	}
+}
+
+{
+	// 场景一：先定义
+	// 已经定义的自定义元素，会立即触发 whenDefined 事件
+	customElements.define('menu-button', MenuButton)
+
+	// :unresolved @deprecated
+	// const unresolvedElements = document.querySelectorAll(':unresolved');
+	const undefinedElements = document.querySelectorAll(':not(:defined)');
+	console.log('undefined Elements: ', undefinedElements)
+
+	const promises = [...undefinedElements].map(
+		undefinedEle => customElements.whenDefined(undefinedEle.localName)
+	)
+	Promise.all(promises).then(() => {
+		console.log('menu-button is defined now!')
+	})
+
+	// 场景二：后定义
+	// 定义后会立即触发 whenDefined 事件
+	// setTimeout(() => {
+	// 	customElements.define('menu-button', MenuButton)
+	// }, 1000)
+}
+
+</script>
+</html>

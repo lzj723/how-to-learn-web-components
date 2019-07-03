@@ -1,0 +1,53 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="./demo.css" />
+<link rel="import" href="./imported.html" />
+<link rel="import" href="./my-dialog.html" />
+<style>
+#open-btn {
+  cursor: pointer;
+  color: #fff;
+  font-family: Helvetica, Arial, sans-serif;
+  outline: 0;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(-90deg, #fb5eaf, #ff416d);
+  transition: all .3s;
+}
+#open-btn:hover {
+  box-shadow: 0 2px 5px #ff82be;
+}
+</style>
+</head>
+<body>
+
+<div id="demo-1" class="container">
+    <menu-button></menu-button>
+</div>
+
+<div id="demo-1" class="container">
+    <button id="open-btn">Launch dialog</button>
+    <my-dialog></my-dialog>
+</div>
+
+
+<script type="module">
+
+{
+    // 使用
+    const btn = document.querySelector('menu-button')
+    console.log(btn)
+    if (btn) {
+        console.log(btn.value)
+    }
+}
+
+{
+    const btn = document.querySelector('#open-btn');
+    btn.addEventListener('click', () => {
+      document.querySelector('my-dialog').open = true;
+    })
+}
+</script>
+</html>

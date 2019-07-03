@@ -1,0 +1,55 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../demo.css" />
+<style>
+</style>
+
+<link rel="import" href="./_imported.html"/>
+</head>
+<body>
+<script>
+/*
+1. 作用：HTML Import将外部的html引入，引入的文档全局有效。
+
+其用途有3：
+  1、是将整个项目所有的公共的css和js引用都放在一个html页面里，需要时直接引用这个html文档即可;
+  2、是将写好的组件放入一个html文档中，需要时直接引用这个html文档;
+  3、导入中的脚本按顺序执行，不会阻塞主页面的解析，对于主页面来说就像拥有了延迟(defer)执行的效果；
+
+2. 特性：
+① 引入的文档内容只会被主文档存储起来，不会显示在页面中，需要手动添加到DOM结构中；
+② 被import的子文档会立即运行，并且js作用域是全局作用域，但是被import的dom不能被外部 document.querySelector 查找；
+③ 跨域import html需要CORS跨域支持；
+④ 来自相同 URL 的导入仅加载和解析一次；
+
+3. 用法: 
+被引用html页面不需要操作，引用页面需要加入link标签 <link rel="import" href="xxx.html" />
+将被引用文档内容添加到DOM结构中，需要先获取其link值的import，再通过其获得对应子文档的DOM结构，将其引入。
+*/
+
+// 获取到子文档在本文档对应的引用
+const importedHtml = document.querySelector('link[rel="import"]').import
+// 获取子文档要被插入的DOM
+const targetDom = importedHtml.querySelector('.test-out-dom')
+if (targetDom) {
+	const clonedTemplate = targetDom.cloneNode(true)
+	// 插入到主文档中
+	document.body.appendChild(clonedTemplate)
+}
+// 
+console.log(importedHtml)
+console.log(targetDom)
+
+
+// 支持检测
+function supportsImports() {
+  return 'import' in document.createElement('link');
+}
+
+if (supportsImports()) {
+  console.log('您的浏览器支持HTML Imports')
+} else {
+  console.error('您的浏览器不支持HTML Imports')
+}
+</script>
+</html>

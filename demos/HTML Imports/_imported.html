@@ -1,0 +1,20 @@
+<link rel="stylesheet" type="text/css" href="" />
+
+<div class="test-out-dom">
+	<h1>hello world!</h1>
+</div>
+
+<script>
+console.log('被import的子文档会立即运行，并且js作用域是全局作用域，但是被import的dom不能被外部document.querySelector查找')
+
+// importDoc 引用指向 本文件的 文档对象
+const importDoc = document.currentScript.ownerDocument;
+
+// mainDoc 指向import本文档的文档对象
+const mainDoc = document;
+
+// 获取复制第一个样式文件，并添加在父文档上
+const importStyles = importDoc.querySelector('link[rel="stylesheet"]');
+mainDoc.head.appendChild(importStyles.cloneNode(true));
+
+</script>
